@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Light-field-camera : Light field camera using micro lens array">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Light-field-camera</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/muzichao/Light-field-camera">View on GitHub</a>
+
+          <h1 id="project_title">Light-field-camera</h1>
+          <h2 id="project_tagline">Light field camera using micro lens array</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/muzichao/Light-field-camera/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/muzichao/Light-field-camera/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <blockquote>
+<p>可能图片无法显示，参阅：<a href="http://www.muzichao.com/light-field-camera-1/">木子超同学</a></p>
+</blockquote>
+
+<p>估计是因为最近Lytro二代的上市吧，光场相机的概念就又火了一把。借着昨天晚上无意间看到知乎上关于光场相机的问答，我就在此献丑，说下当初我对光场相机的一些理解。</p>
+
+<blockquote>
+<p>需要指出的是，现在所说的光场相机有很多种，比如魅族的伪光场相机（说是伪光场相机我都觉得坑爹，明明是拍摄了几幅不同焦距的图像而已！）。而我这里说的是Ren NG的光场相机，也就是Lytro。</p>
+
+<p>什么是光场相机呢？光场相机就是先拍照后聚焦的相机；光场相机就是可以记录相机内部的光线传输方向等信息的相机；光场相机就是比傻瓜相机还傻瓜的相机，允许再拍摄后根据拍摄者的需要再重新聚焦到任意的位置。</p>
+</blockquote>
+
+<h4>
+<a name="matlab%E4%BB%BF%E7%9C%9F%E5%AE%9E%E9%AA%8C" class="anchor" href="#matlab%E4%BB%BF%E7%9C%9F%E5%AE%9E%E9%AA%8C"><span class="octicon octicon-link"></span></a>Matlab仿真实验</h4>
+
+<p>按照惯例应该是先要上图的，ok，我先上我一年多以前用matlab仿真实现光场相机产生的图，不够精确，还请见谅。</p>
+
+<p>下图（1）是使用matlab仿真产生的光场相机观测数据。</p>
+
+<p><img src="http://www.muzichao.com/wp-content/uploads/2014/05/light-field-camera-pic1.jpg" alt="图（1）"></p>
+
+<p>图（1）</p>
+
+<p>下图（2）、图（3）是图中9个字母的位置关系（9个字母与相机的距离各不相同）：</p>
+
+<p><img src="http://www.muzichao.com/wp-content/uploads/2014/05/light-field-camera-pic2.jpg" alt="图（2）"></p>
+
+<p>图（2）</p>
+
+<p><img src="http://www.muzichao.com/wp-content/uploads/2014/05/light-field-camera-pic3.jpg" alt="图（3）"></p>
+
+<p>图（3）</p>
+
+<p>好了，下面是见证奇迹的时刻了，如图（4）所示，是根据图（1）记录的原始光场数据重聚焦得到的9幅图像，分别聚焦在每个字母的位置。</p>
+
+<p><img src="http://www.muzichao.com/wp-content/uploads/2014/05/light-field-camera-pic4.jpg" alt="图（4）"></p>
+
+<p>图（4）</p>
+
+<p>由于使用matlab仿真验证，数据的离散化等一系列原因导致重构质量还有待提高，不过已经可以说明问题啦。</p>
+
+<h4>
+<a name="%E5%85%89%E7%BA%BF%E8%AE%B0%E5%BD%95" class="anchor" href="#%E5%85%89%E7%BA%BF%E8%AE%B0%E5%BD%95"><span class="octicon octicon-link"></span></a>光线记录</h4>
+
+<p>结果已经展示，我也说说原理吧，都说有图有真相，为了让那些像当初的我一样的人能够更好的理解，我会在下面再上几幅图。</p>
+
+<p>光场相机是因为<code>在普通相机镜头(主镜头)焦距处加微透镜阵列实现记录光线的，然后根据记录的光线实现重聚焦的</code>。那么是如何记录光线的呢，我觉得这个可能是很多人想要了结的问题，下面再次上图，如图（5）所示，微透镜s位于主镜头u的焦距处，传感器位于微透镜s的焦距处（这个其实也很重要的，Ren Ng在他的论文中也说啦，下面会简单的介绍）。</p>
+
+<p>注意：由于微透镜的焦距远远小于主透镜的焦距，因此主透镜可以看做位于微透镜镜的无穷远处。从而可以认为主透镜u上的深绿竖条区域经过某个微透镜后正好聚焦在微透镜后的某一个像素上，又由于微透镜是主透镜的几百分之一，那么近似于采样的理解，可以认为这一个像素就是蓝色的线内部所有光线的一个采样。通过这种方式就记录了相机内部的一条光线；同理，其他像素也都对应一条光线（这样就是为什么Lytro一代记录了1100万条光线，而二代记录了4000万条光线）。</p>
+
+<p><img src="http://www.muzichao.com/wp-content/uploads/2014/05/light-field-camera-pic5.jpg" alt="图（5）"></p>
+
+<p>图（5）</p>
+
+<p>夜已深了，既然说了，我就说完吧，上面图（5）说明了光场相机如何记录一条光线，但是可能还是不够清楚，索性再上两幅图，如图（6）所示，此刻的某个微透镜是不是很像传统相机的主透镜了，而主透镜是不是就相当于位于无穷远的场景了（这些都说废话），回归正题，大家是不是发现了，由于主透镜、微透镜阵列、传感器三者的位置关系，每个微透镜后面的像素可以看做是该像素镜像到主透镜区域的过来的光线的采样。</p>
+
+<p><img src="http://www.muzichao.com/wp-content/uploads/2014/05/light-field-camera-pic6.jpg" alt="图（6）"></p>
+
+<p>图（6）</p>
+
+<p>下面再看图（7），有完没完啦，手机党一定要泪奔啦，好吧，在此致以诚挚的歉意。OK，继续，其实此刻拿出图（7）是为了说明一个前面没有讲到的问题，前面只说一个了一个像素记录了一条光线，而没有谈到光线的方向信息。其实很简单，由于每个像素的位置是固定的，每个像素对应的微透镜的位置也是固定的，由于光线的直线传播，很容易得出光线的方向信息。好吧，再通俗一点：以图（6）和图（7）为例，假设主透镜后面有4个微透镜，每个微透镜后面有8个传感器（为了各种方便，此处都已平面空间为例，立体空间可以以此类推），图（6）中的红色传感器对应图（6）中主透镜的红色区域，如果说这个微透镜的坐标为s1（定值），而红色区域的坐标为7，那么红色传感器记录的这条光线就可以表示为：L(7, s)，图（6）中的光线就为L(u, s1)，而图（7）中的这些光线就为L(4,s)。所有的光线就对应L(u, s)。</p>
+
+<p><img src="http://www.muzichao.com/wp-content/uploads/2014/05/light-field-camera-pic7.jpg" alt="图（7）"></p>
+
+<p>图（7）</p>
+
+<h4>
+<a name="%E9%87%8D%E8%81%9A%E7%84%A6" class="anchor" href="#%E9%87%8D%E8%81%9A%E7%84%A6"><span class="octicon octicon-link"></span></a>重聚焦</h4>
+
+<p>在说重聚焦之前有个问题需要说明下：看过光场相机原始数据的（或者看我仿真产生的数据）都知道，直接观测数据是不能看的，是一个一个的圆形区域，因为每个微透镜都对圆形的主透镜成像，所以实际上光场相机上最终产生的图像是对原始数据进行求和之后得到的，怎么求和呢，就是每个微透镜后面对应的像素加起来，所以一个微透镜也就成了最终的一个像素，而微透镜的尺寸是不能太小的，所以就导致了最终的成像分辨率不高。</p>
+
+<p>好吧，下面可以说重聚焦啦，我又要上图了，如图（8）所示：由于光线的直线传播，既然知道了光线在垂直方向上的两个坐标，又知道了两个坐标之间的水平距离，而传感器记录了光线的强度，根据这些条件，剩下的就是简单的几何问题啦，我就不说啦，一切都在图上。实际上我们的聚焦不就是调整这个水平距离，让光线到达聚焦平面嘛，现在既然知道了光线的方向和强度信息，当然可以随意的重聚焦啦。</p>
+
+<p><img src="http://www.muzichao.com/wp-content/uploads/2014/05/light-field-camera-pic8.jpg" alt="图（8）"></p>
+
+<p>图（8）</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Light-field-camera maintained by <a href="https://github.com/muzichao">muzichao</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
